@@ -1,0 +1,6 @@
+.cproject
+.project
+.pydevproject
+dataset/
+tools/objdet_models/darknet/pretrained/
+tools/objdet_models/resnet/pretrained/
