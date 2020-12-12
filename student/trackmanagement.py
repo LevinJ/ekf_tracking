@@ -108,11 +108,13 @@ class Trackmanagement:
             if track.score > params.delete_threshold + 1:
                 track.score = params.delete_threshold + 1
             track.score -= 1./params.window
-    
-            # delete old tracks   
+            
+        #delete old track    
+        for track in self.track_list:
             if track.score <= params.delete_threshold:
                 if track.P[0, 0] >= params.max_P or track.P[1, 1] >= params.max_P:
                     self.delete_track(track)
+            
             
             # check visibility    
 #             if meas_list: # if not empty
