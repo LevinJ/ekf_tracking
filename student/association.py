@@ -67,16 +67,6 @@ class Association:
         #we will finally assign them when calling get_closest_track_and_meas
         self.unassigned_tracks = np.arange(len(track_list)).tolist()
         self.unassigned_meas = np.arange(len(meas_list)).tolist()
-#          n_r, n_c = association_matrix.shape
-#         for ind in range(n_r):
-#             r = association_matrix[ind,:]
-#             if np.all(r == np.inf):
-#                 self.unassigned_tracks.append(ind)
-#         for ind in range(n_c):
-#             c = association_matrix[:, ind]
-#             if np.all(c == np.inf):
-#                 self.unassigned_meas.append(ind)
-            
         
         self.association_matrix = np.matrix(association_matrix)
         ############
