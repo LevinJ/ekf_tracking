@@ -21,6 +21,7 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 import misc.params as params 
 import math
+from tools.waymo_reader.simple_waymo_open_dataset_reader import utils as waymo_utils
 
 class Sensor:
     '''Sensor class including measurement matrix'''
@@ -32,6 +33,7 @@ class Sensor:
             self.fov = [-np.pi/2, np.pi/2] # angle of field of view in radians
         
         elif name == 'camera':
+            self.camera_calib = calib
             self.dim_meas = 2
             self.sens_to_veh = np.matrix(calib.extrinsic.transform).reshape(4,4) # transformation sensor to vehicle coordinates
             self.f_i = calib.intrinsic[0] # focal length i-coordinate
@@ -56,6 +58,7 @@ class Sensor:
             angle = math.atan2(y, x)
         else:
             angle = math.atan2(y, x)
+#             print("camera fov={}".format(angle))
         if angle >= self.fov[0] and angle <=self.fov[1]:
             return True
         return False
@@ -82,17 +85,15 @@ class Sensor:
             ############
             pos_veh = np.ones((4, 1)) # homogeneous coordinates
             pos_veh[0:3] = x[0:3] 
-            pos_sens = self.veh_to_sens*pos_veh # transform from vehicle to lidar coordinates
-            K = [self.f_i, 0, self.c_i,
-                 0, self.f_j, self.c_j,
-                 0, 0, 1]
-            K = np.matrix(np.array(K).reshape(3,3))
             
-            z_pred = K * pos_sens[:3]
+            vehicle_to_image = waymo_utils.get_image_transform(self.camera_calib)
             
-            z_pred = z_pred/z_pred[2,0]
-            
-            z_pred = z_pred[:2]
+            v = np.matmul(vehicle_to_image, pos_veh)
+            if v[2] < 0:
+                z_pred = np.array([-100, -100])
+            else:
+                z_pred = np.array([v[0]/v[2], v[1]/v[2]])
+            z_pred = np.matrix(z_pred.reshape(-1, 1))
             return z_pred
             
 

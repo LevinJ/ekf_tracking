@@ -60,6 +60,7 @@ data_fullpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'datas
 results_fullpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'results')
 datafile = WaymoDataFileReader(data_fullpath)
 datafile_iter = iter(datafile)  # initialize dataset iterator
+os.makedirs(results_fullpath + "/video",  exist_ok = True)
 
 ## Initialize object detection
 configs_det = det.load_configs(model_name='darknet') # options are 'darknet', 'fpn_resnet'
@@ -81,7 +82,7 @@ camera = None # init camera sensor object
 ## Selective execution and visualization
 exec_detection = [] # options are 'bev_from_pcl', 'detect_objects', 'validate_object_labels', 'measure_detection_performance'; options not in the list will be loaded from file
 exec_tracking = ['perform_tracking'] # options are 'perform_tracking'
-exec_visualization = ['show_objects_in_bev_labels_in_camera', 'show_tracks'] # options are 'show_range_image', 'show_labels_in_image', 'show_objects_and_labels_in_bev', 'show_objects_in_bev_labels_in_camera', 'show_tracks', 'show_detection_performance', 'make_tracking_movie'
+exec_visualization = ['show_tracks','make_tracking_movie'] # options are 'show_range_image', 'show_labels_in_image', 'show_objects_and_labels_in_bev', 'show_objects_in_bev_labels_in_camera', 'show_tracks', 'show_detection_performance', 'make_tracking_movie'
 exec_list = make_exec_list(exec_detection, exec_tracking, exec_visualization)
 vis_pause_time = 0 # set pause time between frames in ms (0 = stop between frames until key is pressed)
 
@@ -252,9 +253,10 @@ while True:
                                            valid_label_flags, image, camera, configs_det)
                 if 'make_tracking_movie' in exec_list:
                     # save track plots to file
-                    fname = results_fullpath + '/tracking%03d.png' % cnt_frame
+                    fname = results_fullpath + "/video" '/tracking%03d.png' % cnt_frame
                     print('Saving frame', fname)
                     fig.savefig(fname)
+                pass
 
         # increment frame counter
         cnt_frame = cnt_frame + 1    
@@ -277,4 +279,6 @@ if 'show_tracks' in exec_list:
 
 ## Make movie from tracking results    
 if 'make_tracking_movie' in exec_list:
-    make_movie(results_fullpath)
+    make_movie(results_fullpath+ "/video" )
+    
+    

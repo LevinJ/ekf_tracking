@@ -60,6 +60,8 @@ class Association:
                 sensor = meas.sensor
                 if self.gating_ok(MHD, sensor):
                     res.append(MHD)
+#                     if sensor.name == "camera":
+#                         print("track {}, state={}, MHD= {}".format(track.id, track.state, MHD))
                 else:
                     res.append(np.inf)
             association_matrix.append(res)
@@ -69,6 +71,8 @@ class Association:
         self.unassigned_meas = np.arange(len(meas_list)).tolist()
         
         self.association_matrix = np.matrix(association_matrix)
+        
+        return
         ############
         # END student code
         ############ 
@@ -105,8 +109,12 @@ class Association:
         ############
         if sensor.name == 'lidar':
             if MHD < params.gating_threshold:
+                return True  
+        if sensor.name == 'camera':
+#             return True
+            if MHD < params.sigma_cam_i * 4:
                 return True
-        return False    
+        return False
         
         ############
         # END student code
@@ -149,13 +157,15 @@ class Association:
             KF.update(track, meas_list[ind_meas])
             
             # update score and track state 
-            manager.handle_updated_track(track)
+            if meas_list[0].sensor.name == 'lidar':
+                manager.handle_updated_track(track)
             
             # save updated track
             manager.track_list[ind_track] = track
             
         # run track management 
-        manager.manage_tracks(self.unassigned_tracks, self.unassigned_meas, meas_list)
+        if meas_list[0].sensor.name == 'lidar':
+            manager.manage_tracks(self.unassigned_tracks, self.unassigned_meas, meas_list)
         
         for track in manager.track_list:            
             print('track', track.id, 'score =', track.score)
