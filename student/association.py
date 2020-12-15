@@ -22,6 +22,8 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 import misc.params as params 
+import math
+from scipy.stats import chi2
 
 class Association:
     '''Data association class with single nearest neighbor association and gating based on Mahalanobis distance'''
@@ -107,13 +109,22 @@ class Association:
         ############
         # TODO Step 3: return True if measurement lies inside gate, otherwise False
         ############
+        df = None
+        gate_val = None
         if sensor.name == 'lidar':
-            if MHD < params.gating_threshold:
-                return True  
+            #While fine tuning the algorihm, we find that it's better to have a larger gate threshold for lidar 
+            #which means current lidar noise is a bit underestimated
+            df = 2 
+            gate_val = params.gating_threshold_lidar
         if sensor.name == 'camera':
-#             return True
-            if MHD < params.sigma_cam_i * 4:
-                return True
+            gate_val = params.gating_threshold
+            df = 1
+        x= MHD * MHD
+        per = chi2.cdf(x, df)
+        if sensor.name == 'lidar':
+            print("lidar chisqr = {}".format(per))
+        if per <  gate_val:
+            return True
         return False
         
         ############
@@ -124,9 +135,13 @@ class Association:
         ############
         # TODO Step 3: calculate and return Mahalanobis distance
         ############
-        z = meas.z.flatten()
-        z_pred = meas.sensor.get_hx(track.x).A.flatten()
-        d = np.linalg.norm(z - z_pred)
+        z = np.matrix(meas.z)
+        z_pred = meas.sensor.get_hx(track.x)
+        y = z - z_pred 
+        S = meas.R
+        
+        d = math.sqrt(y.T * S.I * y)
+        
         
         return d
         
@@ -168,4 +183,8 @@ class Association:
             manager.manage_tracks(self.unassigned_tracks, self.unassigned_meas, meas_list)
         
         for track in manager.track_list:            
-            print('track', track.id, 'score =', track.score)
+            print('track', track.id, 'score =', track.score, 'state={}'.format(track.state))
+            
+            
+            
+            

@@ -28,7 +28,9 @@ sigma_p66 = 5 # initial setting for estimation error covariance P entry for vz
 weight_dim = 0.1 # sliding average parameter for dimension estimation
 
 # association parameters (Step 3)
-gating_threshold = 0.995 # percentage of correct measurements that shall lie inside gate
+gating_threshold_lidar = 0.9999995 # percentage of correct measurements that shall lie inside gate
+
+gating_threshold = 0.995
 
 # measurement parameters (Step 4)
 sigma_lidar_x = 0.1 # measurement noise standard deviation for lidar x position   
