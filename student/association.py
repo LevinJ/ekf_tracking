@@ -150,6 +150,8 @@ class Association:
         ############ 
     
     def associate_and_update(self, manager, meas_list, KF):
+        if len(meas_list) == 0:
+            return
         # associate measurements and tracks
         self.associate(manager.track_list, meas_list, KF)
     
