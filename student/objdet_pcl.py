@@ -153,7 +153,7 @@ def bev_from_pcl(lidar_pcl, configs):
     discr_xs = discr_xs.round().astype(np.int)
     lidar_pcl_cpy[:, 0] = discr_xs
     # step 4 : visualize point-cloud using the function show_pcl from a previous task
-    show_pcl(lidar_pcl_cpy)
+#     show_pcl(lidar_pcl_cpy)
     
     temp_map = np.zeros((configs.bev_height, configs.bev_width))
     temp_map[discr_ys, discr_xs] = 255
