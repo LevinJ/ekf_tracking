@@ -184,7 +184,7 @@ while True:
             cv2.waitKey(vis_pause_time)
 
         if 'show_pcl' in exec_list:
-            pcl.show_pcl(lidar_pcl)
+            pcl.show_pcl(lidar_pcl, configs_det)
 
         if 'show_labels_in_image' in exec_list:
             img_labels = tools.project_labels_into_camera(camera_calibration, image, frame.laser_labels, valid_label_flags, 0.5)
