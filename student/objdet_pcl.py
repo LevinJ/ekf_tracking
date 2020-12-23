@@ -63,8 +63,9 @@ def show_pcl(pcl, configs=None):
                         (lidar_pcl[:, 2] >= configs.lim_z[0]) & (lidar_pcl[:, 2] <= configs.lim_z[1]))
         pcl = lidar_pcl[mask]
         xs, ys, zs = pcl[:,0].reshape(-1, 1), pcl[:,1].reshape(-1, 1), pcl[:,2].reshape(-1, 1)
+        pcl = np.hstack([-ys, xs, zs])
     
-    pcd.points = o3d.utility.Vector3dVector(np.hstack([-ys, xs, zs]))
+    pcd.points = o3d.utility.Vector3dVector(pcl[:,:3])
     # step 4 : for the first frame, add the pcd instance to visualization using add_geometry; for all other frames, use update_geometry instead
     vis.create_window()
     vis.add_geometry(pcd)
