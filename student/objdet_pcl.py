@@ -41,7 +41,7 @@ def show_pcl(pcl, configs=None):
 
     # step 1 : initialize open3d with key callback and create window
     vis = o3d.visualization.VisualizerWithKeyCallback()
-    vis.create_window()
+   
     key_to_callback = {}
     global g_bContinue
     g_bContinue = True
@@ -62,10 +62,11 @@ def show_pcl(pcl, configs=None):
                         (lidar_pcl[:, 1] >= configs.lim_y[0]) & (lidar_pcl[:, 1] <= configs.lim_y[1]) &
                         (lidar_pcl[:, 2] >= configs.lim_z[0]) & (lidar_pcl[:, 2] <= configs.lim_z[1]))
         pcl = lidar_pcl[mask]
+        xs, ys, zs = pcl[:,0].reshape(-1, 1), pcl[:,1].reshape(-1, 1), pcl[:,2].reshape(-1, 1)
     
-    pcd.points = o3d.utility.Vector3dVector(pcl[:,:3])
+    pcd.points = o3d.utility.Vector3dVector(np.hstack([-ys, xs, zs]))
     # step 4 : for the first frame, add the pcd instance to visualization using add_geometry; for all other frames, use update_geometry instead
-    
+    vis.create_window()
     vis.add_geometry(pcd)
     
     # step 5 : visualize point cloud and keep window open until right-arrow is pressed (key-code 262)
