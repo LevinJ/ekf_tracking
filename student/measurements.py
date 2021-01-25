@@ -83,16 +83,32 @@ class Sensor:
             # - make sure to not divide by zero, raise an error if needed
             # - return h(x)
             ############
+            
+            # transform from vehicle to lidar coordinates
             pos_veh = np.ones((4, 1)) # homogeneous coordinates
             pos_veh[0:3] = x[0:3] 
             
-            vehicle_to_image = waymo_utils.get_image_transform(self.camera_calib)
-            
-            v = np.matmul(vehicle_to_image, pos_veh)
-            if v[2] < 0:
+            pos_sens = self.veh_to_sens*pos_veh 
+            x, y, z = pos_sens[0:3]
+            # - project from camera to image coordinates
+            if x <= 0:
+                #when the object is behind camera, we will assign an errorneous measurement to 
+                #indicate the error. In such case, idealy a large measurement variance should be assigneed
+                #to this measurement to allow the ekf to ignore this measurement
                 z_pred = np.array([-100, -100])
-            else:
-                z_pred = np.array([v[0]/v[2], v[1]/v[2]])
+            else:   
+                u = self.c_i - self.f_i * y/x
+                v = self.c_j - self.f_j * z/x
+                z_pred = np.array([u, v])
+            
+                
+            
+#             vehicle_to_image = waymo_utils.get_image_transform(self.camera_calib)      
+#             v = np.matmul(vehicle_to_image, pos_veh)
+#             if v[2] < 0:
+#                 z_pred = np.array([-100, -100])
+#             else:
+#                 z_pred = np.array([v[0]/v[2], v[1]/v[2]])
             z_pred = np.matrix(z_pred.reshape(-1, 1))
             return z_pred
             
