@@ -93,7 +93,8 @@ class Sensor:
             # - project from camera to image coordinates
             if x <= 0:
                 #when the object is behind camera, we will assign an erroneous measurement to 
-                #indicate the error. In such case, ideally a large measurement variance should be assigned
+                #indicate the error. This is not really expected to happen as we've already used in_fov to reject such measurements.
+                #Having said that, if this does happen, ideally a large measurement variance should be assigned
                 #to this measurement to allow the EKF to ignore this measurement
                 z_pred = np.array([-100, -100])
             else:   
