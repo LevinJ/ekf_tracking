@@ -92,9 +92,9 @@ class Sensor:
             x, y, z = pos_sens[0:3]
             # - project from camera to image coordinates
             if x <= 0:
-                #when the object is behind camera, we will assign an errorneous measurement to 
-                #indicate the error. In such case, idealy a large measurement variance should be assigneed
-                #to this measurement to allow the ekf to ignore this measurement
+                #when the object is behind camera, we will assign an erroneous measurement to 
+                #indicate the error. In such case, ideally a large measurement variance should be assigned
+                #to this measurement to allow the EKF to ignore this measurement
                 z_pred = np.array([-100, -100])
             else:   
                 u = self.c_i - self.f_i * y/x
