@@ -111,8 +111,13 @@ def show_range_image(frame):
     # step 6 : stack the range and intensity image vertically using np.vstack and convert the result to an unsigned 8-bit integer
     
     img_range_intensity = np.vstack([range_channel, intensity_channel])
-    h, w = img_range_intensity.shape
-    img_range_intensity = img_range_intensity[:, :int((w/2))]
+    # h, w = img_range_intensity.shape
+    # img_range_intensity = img_range_intensity[:, :int((w/2))]
+    
+    # focus on +/- 90° around the image center
+    deg90 = int(img_range_intensity.shape[1] / 4)
+    ri_center = int(img_range_intensity.shape[1]/2)
+    img_range_intensity = img_range_intensity[:,ri_center-deg90:ri_center+deg90]
     #######
     ####### ID_S1_EX1 END #######     
     
